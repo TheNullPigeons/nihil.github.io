@@ -1,0 +1,21 @@
+# Maintainer: Goultarde
+pkgname=hex2sid
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Convert hexadecimal SID to readable format - Windows SID conversion tool"
+arch=('any')
+url="https://github.com/Goultarde/hex2sid"
+license=('MIT')
+depends=('python')
+makedepends=('git')
+source=("git+https://github.com/Goultarde/hex2sid.git")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/$pkgname"
+    install -Dm755 hex2sid.py "$pkgdir/usr/bin/hex2sid"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    if [ -f LICENSE ]; then
+        install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    fi
+}
