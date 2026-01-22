@@ -62,11 +62,42 @@ else
 fi
 
 # Créer aussi les fichiers .db et .files non compressés (nécessaires pour que pacman les trouve)
-# Pacman moderne peut utiliser .db.tar.xz directement, mais certains clients cherchent .db
-# Note: Si vous utilisez une URL avec / à la fin dans pacman.conf, pacman devrait trouver .db.tar.xz
-# Cette section crée les fichiers .db pour compatibilité
-echo -e "${BLUE}Note: Les fichiers .db.tar.xz sont suffisants pour pacman moderne${NC}"
-echo -e "${BLUE}Assurez-vous que l'URL dans pacman.conf se termine par / : https://nihil.github.io/\$arch/${NC}"
+# Le format .db est une concaténation de tous les fichiers desc dans l'archive
+# Le format .files est une concaténation de tous les fichiers files dans l'archive
+echo -e "${BLUE}Création des fichiers .db et .files non compressés${NC}"
+rm -f "${REPO_NAME}.db" "${REPO_NAME}.files"
+
+# Extraire et reconstruire le fichier .db
+TEMP_DIR=$(mktemp -d)
+CURRENT_DIR=$(pwd)
+cd "$TEMP_DIR"
+tar -xf "${CURRENT_DIR}/${REPO_NAME}.db.tar.xz" 2>/dev/null
+# Concaténer tous les fichiers desc dans l'ordre
+find . -name "desc" -type f | sort | xargs cat > "${CURRENT_DIR}/${REPO_NAME}.db" 2>/dev/null
+cd "$CURRENT_DIR"
+rm -rf "$TEMP_DIR"
+
+# Extraire et reconstruire le fichier .files
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR"
+tar -xf "${CURRENT_DIR}/${REPO_NAME}.files.tar.xz" 2>/dev/null
+# Concaténer tous les fichiers files dans l'ordre
+find . -name "files" -type f | sort | xargs cat > "${CURRENT_DIR}/${REPO_NAME}.files" 2>/dev/null
+cd "$CURRENT_DIR"
+rm -rf "$TEMP_DIR"
+
+# Vérifier que les fichiers ont été créés
+if [ ! -f "${REPO_NAME}.db" ] || [ ! -s "${REPO_NAME}.db" ]; then
+    echo -e "${RED}Erreur: Le fichier .db n'a pas pu être créé${NC}"
+    exit 1
+fi
+
+if [ ! -f "${REPO_NAME}.files" ] || [ ! -s "${REPO_NAME}.files" ]; then
+    echo -e "${RED}Erreur: Le fichier .files n'a pas pu être créé${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Fichiers .db et .files créés avec succès${NC}"
 
 echo -e "${GREEN}Dépôt mis à jour avec succès!${NC}"
 echo -e "${BLUE}Fichiers générés:${NC}"
