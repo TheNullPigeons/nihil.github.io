@@ -34,24 +34,21 @@ jobs:
               -v "$(pwd)/x86_64:/output" \
               archlinux:latest \
               bash -c "
-                # Update system and install build tools
-                pacman -Syu --noconfirm base-devel git
+                # Update system and install build tools + sudo
+                pacman -Syu --noconfirm base-devel git sudo
                 
-                # Read dependencies from PKGBUILD and install them
-                cd /build
-                source PKGBUILD
-                if [ -n \"\${depends[@]}\" ]; then
-                  pacman -S --noconfirm --needed \"\${depends[@]}\" || true
-                fi
-                if [ -n \"\${makedepends[@]}\" ]; then
-                  pacman -S --noconfirm --needed \"\${makedepends[@]}\" || true
-                fi
-                
-                # Create builder user and build package
+                # Create builder user
                 useradd -m builder
                 chown -R builder:builder /build /output
-                su builder -c 'makepkg --noconfirm' || exit 1
-                cp *.pkg.tar.zst /output/ 2>/dev/null || true
+                
+                # Allow builder to run sudo without password
+                echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+                
+                # Build package handling dependencies automatically
+                su builder -c 'cd /build && makepkg -s --noconfirm' || exit 1
+                
+                # Copy artifacts
+                cp /build/*.pkg.tar.zst /output/ 2>/dev/null || true
               " || {
                 echo "Failed to build $pkgname"
                 continue
