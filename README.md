@@ -11,7 +11,7 @@ Ajoutez le dépôt à votre fichier `/etc/pacman.conf` :
 ```ini
 [nihil]
 SigLevel = Optional TrustAll
-Server = https://nihil.github.io/$arch/
+Server = https://TheNullPigeons.github.io/$arch/
 ```
 
 **Important** : Notez le `/` à la fin de l'URL, c'est important pour que pacman trouve correctement les fichiers.
@@ -19,7 +19,7 @@ Server = https://nihil.github.io/$arch/
 Ou pour une installation temporaire (sans modification de `/etc/pacman.conf`) :
 
 ```bash
-sudo pacman -U https://nihil.github.io/x86_64/nihil.db.tar.xz
+sudo pacman -U https://TheNullPigeons.github.io/x86_64/nihil.db.tar.xz
 ```
 
 ### Synchroniser et installer
@@ -51,7 +51,7 @@ GPG_KEY="VOTRE_CLE_GPG" ./update-repo.sh
 ### Structure du dépôt
 
 ```
-nihil.github.io/
+TheNullPigeons.github.io/
 ├── x86_64/              # Paquets pour architecture x86_64
 │   ├── *.pkg.tar.zst    # Paquets Arch Linux
 │   ├── nihil.db.tar.xz  # Base de données du dépôt
