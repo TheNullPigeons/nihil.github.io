@@ -1,0 +1,21 @@
+# Maintainer: Goultarde
+pkgname=queryhound
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Tool to verify KQL queries"
+arch=('any')
+url="https://github.com/Goultarde/QueryHound"
+license=('MIT')
+depends=('python')
+makedepends=('git')
+source=("git+https://github.com/Goultarde/QueryHound.git")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/QueryHound"
+    install -Dm755 QueryHound.py "$pkgdir/usr/bin/queryhound"
+    # Note: README might not be present or named differently, checking first
+    if [ -f README.md ]; then
+        install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    fi
+}

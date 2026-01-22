@@ -1,0 +1,18 @@
+# Maintainer: Goultarde
+pkgname=aes2hashcat
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Extract AES keys from files for Hashcat cracking"
+arch=('any')
+url="https://github.com/Goultarde/aes2hashcat.py"
+license=('MIT')
+depends=('python')
+makedepends=('git')
+source=("git+https://github.com/Goultarde/aes2hashcat.py.git")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/aes2hashcat.py"
+    install -Dm755 aes2hashcat.py "$pkgdir/usr/bin/aes2hashcat"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

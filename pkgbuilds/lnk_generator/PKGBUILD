@@ -1,0 +1,34 @@
+# Maintainer: Goultarde
+pkgname=lnk_generator
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Generate malicious LNK files"
+arch=('any')
+url="https://github.com/Goultarde/lnk_generator"
+license=('MIT')
+depends=('python')
+makedepends=('git')
+source=("git+https://github.com/Goultarde/lnk_generator.git")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/lnk_generator"
+    
+    # Create installation directory
+    install -d "$pkgdir/usr/share/lnk_generator"
+    
+    # Install scripts
+    install -m644 lnk_generator.py "$pkgdir/usr/share/lnk_generator/"
+    install -m644 native_lnk_generator.py "$pkgdir/usr/share/lnk_generator/"
+    
+    # Install README
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    
+    # Create wrapper script
+    install -d "$pkgdir/usr/bin"
+    cat > "$pkgdir/usr/bin/lnk_generator" <<EOF
+#!/bin/sh
+exec python3 /usr/share/lnk_generator/lnk_generator.py "\$@"
+EOF
+    chmod 755 "$pkgdir/usr/bin/lnk_generator"
+}
