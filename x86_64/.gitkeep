@@ -1,0 +1,2 @@
+# Ce répertoire contiendra les paquets Arch Linux (.pkg.tar.zst)
+# Placez vos paquets ici et exécutez ../update-repo.sh pour générer le dépôt
