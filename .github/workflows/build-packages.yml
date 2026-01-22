@@ -31,11 +31,23 @@ jobs:
               -v "$(pwd)/x86_64:/output" \
               archlinux:latest \
               bash -c "
+                # Update system and install build tools
                 pacman -Syu --noconfirm base-devel git
+                
+                # Read dependencies from PKGBUILD and install them
+                cd /build
+                source PKGBUILD
+                if [ -n \"\${depends[@]}\" ]; then
+                  pacman -S --noconfirm --needed \"\${depends[@]}\" || true
+                fi
+                if [ -n \"\${makedepends[@]}\" ]; then
+                  pacman -S --noconfirm --needed \"\${makedepends[@]}\" || true
+                fi
+                
+                # Create builder user and build package
                 useradd -m builder
                 chown -R builder:builder /build /output
-                cd /build
-                su builder -c 'makepkg -s --noconfirm' || exit 1
+                su builder -c 'makepkg --noconfirm' || exit 1
                 cp *.pkg.tar.zst /output/ 2>/dev/null || true
               " || {
                 echo "Failed to build $pkgname"
