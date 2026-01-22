@@ -76,7 +76,8 @@ jobs:
         done
         
         # Find packages to remove from the database
-        for pkg in *.pkg.tar.zst 2>/dev/null; do
+        shopt -s nullglob
+        for pkg in *.pkg.tar.zst; do
           [ -f "$pkg" ] || continue
           
           # Extract package name (remove version and extension)
