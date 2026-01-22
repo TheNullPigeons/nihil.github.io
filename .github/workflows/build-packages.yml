@@ -48,6 +48,12 @@ jobs:
       run: |
         cd x86_64
         
+        # Skip if no database exists yet
+        if [ ! -f "nihil.db.tar.gz" ]; then
+          echo "No existing database, skipping cleanup"
+          exit 0
+        fi
+        
         # Get list of current packages from pkgbuilds/
         current_packages=""
         for pkgdir in ../pkgbuilds/*/; do
