@@ -1,0 +1,10 @@
+# Build artifacts from makepkg
+pkgbuilds/*/src/
+pkgbuilds/*/pkg/
+pkgbuilds/*/*.pkg.tar.zst
+pkgbuilds/*/*.pkg.tar.xz
+pkgbuilds/*/*.pkg.tar.gz
+pkgbuilds/*/*.log
+
+# Repository database backups
+x86_64/*.old
