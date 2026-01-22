@@ -1,0 +1,38 @@
+name: Update Arch Repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'x86_64/*.pkg.tar.*'
+  workflow_dispatch:
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Arch Linux container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            archlinux:latest \
+            bash -c "pacman -Sy --noconfirm pacman-contrib && \
+                     cd /workspace && \
+                     chmod +x update-repo.sh && \
+                     ./update-repo.sh"
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add x86_64/*.db* x86_64/*.files* || true
+          git diff --staged --quiet || git commit -m "Update repository database [skip ci]"
+          git push

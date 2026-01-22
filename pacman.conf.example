@@ -1,0 +1,11 @@
+# Exemple de configuration pour ajouter le dépôt Nihil à pacman.conf
+# Copiez cette section dans /etc/pacman.conf
+
+[nihil]
+SigLevel = Optional TrustAll
+Server = https://nihil.github.io/$arch
+
+# Pour une configuration plus sécurisée avec signature GPG :
+# [nihil]
+# SigLevel = Required
+# Server = https://nihil.github.io/$arch
