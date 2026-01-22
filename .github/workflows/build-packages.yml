@@ -55,6 +55,9 @@ jobs:
               }
           fi
         done
+        
+        # Ensure runner user owns the output files
+        sudo chown -R $USER:$USER x86_64/
     
     - name: Clean removed packages
       run: |
@@ -95,7 +98,7 @@ jobs:
             "
             
             # Remove package file
-            rm -f "$pkg"
+            sudo rm -f "$pkg"
           fi
         done
     
