@@ -15,17 +15,9 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Install Arch Linux build tools
+    - name: Build packages using Arch Linux Docker
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://github.com/MarkusJx/arch-makepkg/releases/latest/download/arch-makepkg-x86_64.AppImage
-        chmod +x arch-makepkg-x86_64.AppImage
-        sudo mv arch-makepkg-x86_64.AppImage /usr/local/bin/arch-makepkg
-    
-    - name: Build packages from pkgbuilds/
-      run: |
-        mkdir -p build x86_64
+        mkdir -p x86_64
         
         # Build each package found in pkgbuilds/
         for pkgdir in pkgbuilds/*/; do
@@ -33,21 +25,22 @@ jobs:
             pkgname=$(basename "$pkgdir")
             echo "Building package: $pkgname"
             
-            # Create build directory
-            mkdir -p "build/$pkgname"
-            cp "$pkgdir/PKGBUILD" "build/$pkgname/"
-            
-            # Build package
-            cd "build/$pkgname"
-            arch-makepkg || {
-              echo "Failed to build $pkgname"
-              cd ../..
-              continue
-            }
-            
-            # Copy to repository
-            cp *.pkg.tar.zst ../../x86_64/ 2>/dev/null || true
-            cd ../..
+            # Build using Arch Linux container
+            docker run --rm \
+              -v "$(pwd)/$pkgdir:/build" \
+              -v "$(pwd)/x86_64:/output" \
+              archlinux:latest \
+              bash -c "
+                pacman -Syu --noconfirm base-devel git
+                useradd -m builder
+                chown -R builder:builder /build /output
+                cd /build
+                su builder -c 'makepkg -s --noconfirm' || exit 1
+                cp *.pkg.tar.zst /output/ 2>/dev/null || true
+              " || {
+                echo "Failed to build $pkgname"
+                continue
+              }
           fi
         done
     
@@ -65,7 +58,7 @@ jobs:
         done
         
         # Find packages to remove from the database
-        for pkg in *.pkg.tar.zst; do
+        for pkg in *.pkg.tar.zst 2>/dev/null; do
           [ -f "$pkg" ] || continue
           
           # Extract package name (remove version and extension)
@@ -75,8 +68,12 @@ jobs:
           if ! echo "$current_packages" | grep -q "$pkg_base"; then
             echo "Removing package from repository: $pkg_base"
             
-            # Remove from database
-            repo-remove nihil.db.tar.gz "$pkg_base"
+            # Install pacman tools
+            docker run --rm -v "$(pwd):/repo" archlinux:latest bash -c "
+              pacman -Sy --noconfirm pacman
+              cd /repo
+              repo-remove nihil.db.tar.gz '$pkg_base'
+            "
             
             # Remove package file
             rm -f "$pkg"
@@ -89,18 +86,17 @@ jobs:
         
         # Update/create repository database with all current packages
         if ls *.pkg.tar.zst 1> /dev/null 2>&1; then
-          # Remove old database if exists
-          rm -f nihil.db.tar.gz.old nihil.files.tar.gz.old
-          
-          # Add all packages (this updates existing entries)
-          repo-add nihil.db.tar.gz *.pkg.tar.zst
-          
-          # Create symlinks
-          ln -sf nihil.db.tar.gz nihil.db
-          ln -sf nihil.files.tar.gz nihil.files
+          # Use Arch Linux container to run repo-add
+          docker run --rm -v "$(pwd):/repo" archlinux:latest bash -c "
+            pacman -Sy --noconfirm pacman
+            cd /repo
+            rm -f nihil.db.tar.gz.old nihil.files.tar.gz.old
+            repo-add nihil.db.tar.gz *.pkg.tar.zst
+            ln -sf nihil.db.tar.gz nihil.db
+            ln -sf nihil.files.tar.gz nihil.files
+          "
         else
           echo "No packages found, creating empty repository"
-          # Create empty database
           tar czf nihil.db.tar.gz -T /dev/null
           tar czf nihil.files.tar.gz -T /dev/null
           ln -sf nihil.db.tar.gz nihil.db
