@@ -133,3 +133,12 @@ jobs:
         git add x86_64/
         git diff --quiet && git diff --staged --quiet || git commit -m "chore: update packages [skip ci]"
         git push
+
+    - name: Trigger Nihil Image Build
+      if: success()
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.DISPATCH_TOKEN }}
+        repository: TheNullPigeons/nihil-images
+        event-type: packages-updated
+      continue-on-error: true
