@@ -11,8 +11,10 @@ Ajoutez le dépôt à votre fichier `/etc/pacman.conf` :
 ```ini
 [nihil]
 SigLevel = Optional TrustAll
-Server = https://nihil.github.io/$arch
+Server = https://nihil.github.io/$arch/
 ```
+
+**Important** : Notez le `/` à la fin de l'URL, c'est important pour que pacman trouve correctement les fichiers.
 
 Ou pour une installation temporaire (sans modification de `/etc/pacman.conf`) :
 

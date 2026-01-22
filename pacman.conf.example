@@ -3,9 +3,11 @@
 
 [nihil]
 SigLevel = Optional TrustAll
-Server = https://nihil.github.io/$arch
+Server = https://nihil.github.io/$arch/
+
+# IMPORTANT: Le slash (/) à la fin est nécessaire pour que pacman trouve les fichiers correctement
 
 # Pour une configuration plus sécurisée avec signature GPG :
 # [nihil]
 # SigLevel = Required
-# Server = https://nihil.github.io/$arch
+# Server = https://nihil.github.io/$arch/

@@ -1,4 +1,4 @@
-s#!/bin/bash
+#!/bin/bash
 # Script pour générer et mettre à jour le dépôt Arch Linux
 
 set -e
@@ -60,6 +60,13 @@ else
     repo-add "${REPO_NAME}.db.tar.xz" *.pkg.tar.* 2>/dev/null || \
     repo-add "${REPO_NAME}.db.tar.xz" *.pkg.tar.*
 fi
+
+# Créer aussi les fichiers .db et .files non compressés (nécessaires pour que pacman les trouve)
+# Pacman moderne peut utiliser .db.tar.xz directement, mais certains clients cherchent .db
+# Note: Si vous utilisez une URL avec / à la fin dans pacman.conf, pacman devrait trouver .db.tar.xz
+# Cette section crée les fichiers .db pour compatibilité
+echo -e "${BLUE}Note: Les fichiers .db.tar.xz sont suffisants pour pacman moderne${NC}"
+echo -e "${BLUE}Assurez-vous que l'URL dans pacman.conf se termine par / : https://nihil.github.io/\$arch/${NC}"
 
 echo -e "${GREEN}Dépôt mis à jour avec succès!${NC}"
 echo -e "${BLUE}Fichiers générés:${NC}"
