@@ -47,8 +47,12 @@ jobs:
                 # Build package handling dependencies automatically
                 su builder -c 'cd /build && makepkg -s --noconfirm' || exit 1
                 
+                echo "listing build dir after makepkg:"
+                ls -la /build
+                
                 # Copy artifacts
-                cp /build/*.pkg.tar.zst /output/ 2>/dev/null || true
+                echo "copying artifacts..."
+                cp -v /build/*.pkg.tar.zst /output/ || echo "CP FAILURE"
               " || {
                 echo "Failed to build $pkgname"
                 continue
