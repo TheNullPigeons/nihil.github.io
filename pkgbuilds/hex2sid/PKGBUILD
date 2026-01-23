@@ -1,7 +1,7 @@
 # Maintainer: Goultarde
 pkgname=hex2sid
 pkgver=1.1.1
-pkgrel=2
+pkgrel=3
 pkgdesc="MSSQL hexadecimal SID converter to readable format (S-1-5-...) with direct MSSQL connection via impacket"
 arch=('any')
 url="https://github.com/Goultarde/hex2sid"
