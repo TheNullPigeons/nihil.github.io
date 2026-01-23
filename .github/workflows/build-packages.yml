@@ -121,16 +121,35 @@ jobs:
               set -e
               
               # Mettre à jour le système et installer les outils de build
-              pacman -Sy --noconfirm base-devel git sudo
+              pacman -Sy --noconfirm base-devel git sudo python python-pip
               
               # Créer un utilisateur builder (makepkg ne peut pas tourner en root)
               useradd -m -s /bin/bash builder
               chown -R builder:builder /build /output
               
+              # Configurer sudo pour builder (sans mot de passe)
+              echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+              chmod 0440 /etc/sudoers.d/builder
+              
               # Builder le paquet en tant que builder
+              # Note: makepkg -s installe automatiquement les dépendances via sudo pacman
+              # Si certaines dépendances ne sont pas dans les dépôts officiels,
+              # on essaie d'abord avec -s, puis on réessaie avec --skipdeps si ça échoue
               su builder -c 'cd /build && makepkg -s --noconfirm --cleanbuild' || {
-                echo \"❌ Failed to build $pkgname\"
-                exit 1
+                echo \"⚠️ Build avec dépendances automatiques a échoué, tentative avec --skipdeps...\"
+                # Installer les dépendances Python manquantes via pip (pour impacket, etc.)
+                python -m pip install --break-system-packages impacket python-termcolor 2>/dev/null || true
+                # Réessayer sans installer les dépendances via pacman
+                su builder -c 'cd /build && makepkg --noconfirm --skipdeps --cleanbuild' || {
+                  echo \"❌ Failed to build $pkgname\"
+                  echo \"Vérifiez les dépendances dans le PKGBUILD\"
+                  # Afficher les dépendances pour debug
+                  if [ -f /build/PKGBUILD ]; then
+                    echo \"Dépendances du PKGBUILD:\"
+                    grep -E '^(depends|makedepends|checkdepends)' /build/PKGBUILD || true
+                  fi
+                  exit 1
+                }
               }
               
               # Copier les artefacts vers /output
