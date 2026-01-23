@@ -19,6 +19,7 @@ package() {
     python -m venv "$pkgdir/opt/pipx/venvs/netexec"
     
     # 2. Utiliser le pip du venv pour installer DEPUIS LES SOURCES
+    export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
     "$pkgdir/opt/pipx/venvs/netexec/bin/pip" install .
     
     # 3. Nettoyage
