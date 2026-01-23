@@ -146,7 +146,7 @@ python-requests
 git
 
 %FILENAME%
-hex2sid-1.1.0-1-any.pkg.tar.zst
+hex2sid-1.1.1-3-any.pkg.tar.zst
 
 %NAME%
 hex2sid
@@ -155,19 +155,19 @@ hex2sid
 hex2sid
 
 %VERSION%
-1.1.0-1
+1.1.1-3
 
 %DESC%
 MSSQL hexadecimal SID converter to readable format (S-1-5-...) with direct MSSQL connection via impacket
 
 %CSIZE%
-48167
+30886
 
 %ISIZE%
-68981
+70056
 
 %SHA256SUM%
-a58def8dfaa428a8f582fcaea82edd885d02986de0ef137b348459992504b110
+9a52002a252d5f4396206c08b6f48ffe4651f7b80bb31dd37fd18ce743f57733
 
 %URL%
 https://github.com/Goultarde/hex2sid
@@ -179,7 +179,7 @@ MIT
 any
 
 %BUILDDATE%
-1769174060
+1769174854
 
 %PACKAGER%
 Unknown Packager
