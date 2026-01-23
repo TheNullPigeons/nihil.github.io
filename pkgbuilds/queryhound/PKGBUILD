@@ -1,7 +1,7 @@
 # Maintainer: Goultarde
 pkgname=queryhound
-pkgver=1.0.0
-pkgrel=1
+pkgver=1.0.1
+pkgrel=2
 pkgdesc="Tool to verify KQL queries"
 arch=('any')
 url="https://github.com/Goultarde/QueryHound"
@@ -13,7 +13,21 @@ sha256sums=('SKIP')
 
 package() {
     cd "$srcdir/QueryHound"
-    install -Dm755 QueryHound.py "$pkgdir/usr/bin/queryhound"
+    
+    # Create installation directory
+    install -d "$pkgdir/usr/share/queryhound"
+    
+    # Install the script (not executable, as we'll call it via python)
+    install -m644 QueryHound.py "$pkgdir/usr/share/queryhound/QueryHound.py"
+    
+    # Create wrapper script
+    install -d "$pkgdir/usr/bin"
+    cat > "$pkgdir/usr/bin/queryhound" <<EOF
+#!/bin/sh
+exec python3 /usr/share/queryhound/QueryHound.py "\$@"
+EOF
+    chmod 755 "$pkgdir/usr/bin/queryhound"
+
     # Note: README might not be present or named differently, checking first
     if [ -f README.md ]; then
         install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
