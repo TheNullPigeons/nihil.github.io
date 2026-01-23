@@ -1,0 +1,9 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "origin"]
+	url = https://github.com/0xbbuddha/BashHound-CE.git
+	tagOpt = --no-tags
+	fetch = +refs/*:refs/*
+	mirror = true

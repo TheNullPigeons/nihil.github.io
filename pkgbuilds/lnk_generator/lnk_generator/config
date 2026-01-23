@@ -1,0 +1,9 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "origin"]
+	url = https://github.com/Goultarde/lnk_generator.git
+	tagOpt = --no-tags
+	fetch = +refs/*:refs/*
+	mirror = true
