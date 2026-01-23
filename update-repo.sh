@@ -65,22 +65,32 @@ fi
 echo -e "${BLUE}Création des fichiers .db et .files non compressés${NC}"
 rm -f "${REPO_NAME}.db" "${REPO_NAME}.files"
 
-# Extraire et reconstruire le fichier .db
+# Extraire et reconstruire le fichier .db comme archive tar non compressée
 TEMP_DIR=$(mktemp -d)
 CURRENT_DIR=$(pwd)
 cd "$TEMP_DIR"
 tar -xf "${CURRENT_DIR}/${REPO_NAME}.db.tar.xz" 2>/dev/null
-# Concaténer tous les fichiers desc dans l'ordre
-find . -name "desc" -type f | sort | xargs cat > "${CURRENT_DIR}/${REPO_NAME}.db" 2>/dev/null
+# Créer une archive tar non compressée avec tous les fichiers
+if [ -n "$(find . -type f)" ]; then
+    tar -cf "${CURRENT_DIR}/${REPO_NAME}.db" $(find . -type f | sort) 2>/dev/null || {
+        echo -e "${RED}Erreur lors de la création de ${REPO_NAME}.db${NC}"
+        exit 1
+    }
+fi
 cd "$CURRENT_DIR"
 rm -rf "$TEMP_DIR"
 
-# Extraire et reconstruire le fichier .files
+# Extraire et reconstruire le fichier .files comme archive tar non compressée
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 tar -xf "${CURRENT_DIR}/${REPO_NAME}.files.tar.xz" 2>/dev/null
-# Concaténer tous les fichiers files dans l'ordre
-find . -name "files" -type f | sort | xargs cat > "${CURRENT_DIR}/${REPO_NAME}.files" 2>/dev/null
+# Créer une archive tar non compressée avec tous les fichiers
+if [ -n "$(find . -type f)" ]; then
+    tar -cf "${CURRENT_DIR}/${REPO_NAME}.files" $(find . -type f | sort) 2>/dev/null || {
+        echo -e "${RED}Erreur lors de la création de ${REPO_NAME}.files${NC}"
+        exit 1
+    }
+fi
 cd "$CURRENT_DIR"
 rm -rf "$TEMP_DIR"
 

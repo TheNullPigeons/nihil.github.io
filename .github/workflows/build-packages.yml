@@ -229,19 +229,32 @@ jobs:
             # Générer la nouvelle base de données
             repo-add nihil.db.tar.xz *.pkg.tar.zst
             
-            # Créer les fichiers .db et .files non compressés pour compatibilité
-            # Extraire depuis l'archive
+            # Créer les fichiers .db et .files non compressés
+            # Les fichiers .db et .files sont des archives tar non compressées
+            # qui contiennent les mêmes fichiers que les .tar.xz
             TEMP_DIR=\$(mktemp -d)
             cd \$TEMP_DIR
+            
+            # Extraire nihil.db.tar.xz
             tar -xf /repo/nihil.db.tar.xz 2>/dev/null
-            find . -name 'desc' -type f | sort | xargs cat > /repo/nihil.db 2>/dev/null || true
+            # Créer nihil.db comme archive tar non compressée
+            if [ -n \"\$(find . -type f)\" ]; then
+              tar -cf /repo/nihil.db \$(find . -type f | sort) 2>/dev/null || true
+            fi
+            
             cd /
             rm -rf \$TEMP_DIR
             
             TEMP_DIR=\$(mktemp -d)
             cd \$TEMP_DIR
+            
+            # Extraire nihil.files.tar.xz
             tar -xf /repo/nihil.files.tar.xz 2>/dev/null
-            find . -name 'files' -type f | sort | xargs cat > /repo/nihil.files 2>/dev/null || true
+            # Créer nihil.files comme archive tar non compressée
+            if [ -n \"\$(find . -type f)\" ]; then
+              tar -cf /repo/nihil.files \$(find . -type f | sort) 2>/dev/null || true
+            fi
+            
             cd /
             rm -rf \$TEMP_DIR
             
