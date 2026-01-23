@@ -1,20 +1,26 @@
 # Maintainer: Goultarde
 pkgname=hex2sid
 pkgver=1.0.0
-pkgrel=1
-pkgdesc="Convert hexadecimal SID to readable format - Windows SID conversion tool"
+pkgrel=2
+pkgdesc="MSSQL hexadecimal SID converter to readable format (S-1-5-...) with direct MSSQL connection via impacket"
 arch=('any')
 url="https://github.com/Goultarde/hex2sid"
 license=('MIT')
 depends=('python' 'python-termcolor' 'python-impacket')
-makedepends=('git')
+makedepends=('git' 'python-pip' 'python-build' 'python-installer')
 source=("git+https://github.com/Goultarde/hex2sid.git")
 sha256sums=('SKIP')
 
 package() {
     cd "$srcdir/$pkgname"
-    install -Dm755 hex2sid.py "$pkgdir/usr/bin/hex2sid"
+    
+    # Install package using pip (this will install dependencies from pyproject.toml)
+    pip install --root="$pkgdir" --no-deps --no-warn-script-location .
+    
+    # Install documentation
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    
+    # Install license if present
     if [ -f LICENSE ]; then
         install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
     fi
