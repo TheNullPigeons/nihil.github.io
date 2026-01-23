@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/Goultarde/NetExec"
 license=('BSD')
 depends=('python')
-makedepends=('git' 'python-pip' 'python-venv')
+makedepends=('git' 'python-pip')
 source=("git+https://github.com/Goultarde/NetExec.git")
 sha256sums=('SKIP')
 
