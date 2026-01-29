@@ -110,3 +110,4 @@ echo -e "${GREEN}Fichiers .db et .files créés avec succès${NC}"
 echo -e "${GREEN}Dépôt mis à jour avec succès!${NC}"
 echo -e "${BLUE}Fichiers générés:${NC}"
 ls -lh "${REPO_NAME}".db* "${REPO_NAME}".files* 2>/dev/null || true
+
